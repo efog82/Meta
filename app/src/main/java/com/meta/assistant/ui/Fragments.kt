@@ -34,14 +34,14 @@ val stop=root.findViewById<Button>(R.id.btnStop)
 group.setOnCheckedStateChangeListener{_,ids->val id=ids.firstOrNull()?:return@setOnCheckedStateChangeListener;mode=AssistantMode.fromLabel(root.findViewById<Chip>(id).text.toString())}
 online.setOnCheckedChangeListener{_,enabled->useOnline=enabled}
 val db=(requireActivity().application as MetaApp).db
-viewLifecycleOwner.lifecycleScope.launch{log.text=db.chatDao().getAll().joinToString("\n\n"){"${it.role}: ${it.content}"}}
+lifecycleScope.launch{log.text=db.chatDao().getAll().joinToString("\n\n"){"${it.role}: ${it.content}"}}
 stop.setOnClickListener{generation?.cancel();generation=null;send.isEnabled=true}
 send.setOnClickListener{
 val prompt=input.text.toString().trim()
 if(prompt.isEmpty()||generation?.isActive==true)return@setOnClickListener
 input.text.clear();send.isEnabled=false
 log.append("\n\nTu: $prompt\nAssistente: ")
-generation=viewLifecycleOwner.lifecycleScope.launch{
+generation=lifecycleScope.launch{
 try{
 db.chatDao().insert(ChatMessage(role="user",content=prompt,mode=mode.label))
 val out=StringBuilder()
@@ -62,10 +62,10 @@ val input=root.findViewById<EditText>(R.id.listInput)
 input.hint="Nova tarefa..."
 val list=root.findViewById<TextView>(R.id.listContent)
 val db=(requireActivity().application as MetaApp).db
-fun refresh(){viewLifecycleOwner.lifecycleScope.launch{list.text=db.agendaDao().getAll().joinToString("\n"){(if(it.done)"[x] " else "[ ] ")+it.title}}}
+fun refresh(){lifecycleScope.launch{list.text=db.agendaDao().getAll().joinToString("\n"){(if(it.done)"[x] " else "[ ] ")+it.title}}}
 root.findViewById<Button>(R.id.btnAdd).setOnClickListener{
 val title=input.text.toString().trim()
-if(title.isNotEmpty())viewLifecycleOwner.lifecycleScope.launch{db.agendaDao().insert(AgendaItem(title=title));input.text.clear();refresh()}
+if(title.isNotEmpty())lifecycleScope.launch{db.agendaDao().insert(AgendaItem(title=title));input.text.clear();refresh()}
 }
 refresh();return root
 }
@@ -78,10 +78,10 @@ val input=root.findViewById<EditText>(R.id.listInput)
 input.hint="Escreve uma nota..."
 val list=root.findViewById<TextView>(R.id.listContent)
 val db=(requireActivity().application as MetaApp).db
-fun refresh(){viewLifecycleOwner.lifecycleScope.launch{list.text=db.noteDao().getAll().joinToString("\n\n"){it.text}}}
+fun refresh(){lifecycleScope.launch{list.text=db.noteDao().getAll().joinToString("\n\n"){it.text}}}
 root.findViewById<Button>(R.id.btnAdd).setOnClickListener{
 val value=input.text.toString().trim()
-if(value.isNotEmpty())viewLifecycleOwner.lifecycleScope.launch{db.noteDao().insert(Note(text=value));input.text.clear();refresh()}
+if(value.isNotEmpty())lifecycleScope.launch{db.noteDao().insert(Note(text=value));input.text.clear();refresh()}
 }
 refresh();return root
 }
