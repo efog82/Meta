@@ -1,5 +1,7 @@
 package com.meta.assistant.ui
 import android.os.Bundle
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +25,20 @@ class ChatFragment:Fragment(){
 private var mode=AssistantMode.EQUILIBRADO
 private var useOnline=false
 private var generation:Job?=null
+private val pickModel = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+    if (uri != null) {
+        val app = requireActivity().application as MetaApp
+        lifecycleScope.launch {
+            try {
+                Toast.makeText(requireContext(), "A carregar modelo MediaPipe...", Toast.LENGTH_SHORT).show()
+                app.localEngine.importModel(uri)
+                Toast.makeText(requireContext(), "Modelo carregado.", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Erro: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+}
 override fun onCreateView(inflater:LayoutInflater,container:ViewGroup?,savedInstanceState:Bundle?):View{
 val root=inflater.inflate(R.layout.fragment_chat,container,false)
 val group=root.findViewById<ChipGroup>(R.id.chipMode)
@@ -31,6 +47,13 @@ val log=root.findViewById<TextView>(R.id.chatLog)
 val input=root.findViewById<EditText>(R.id.inputMessage)
 val send=root.findViewById<Button>(R.id.btnSend)
 val stop=root.findViewById<Button>(R.id.btnStop)
+root.findViewById<Button>(R.id.btnModel).setOnClickListener {
+    pickModel.launch(arrayOf("application/octet-stream", "*/*"))
+}
+val app = requireActivity().application as MetaApp
+lifecycleScope.launch {
+    try { app.localEngine.loadSavedModel() } catch (_: Exception) { }
+}
 group.setOnCheckedStateChangeListener{_,ids->val id=ids.firstOrNull()?:return@setOnCheckedStateChangeListener;mode=AssistantMode.fromLabel(root.findViewById<Chip>(id).text.toString())}
 online.setOnCheckedChangeListener{_,enabled->useOnline=enabled}
 val db=(requireActivity().application as MetaApp).db
@@ -45,7 +68,7 @@ generation=lifecycleScope.launch{
 try{
 db.chatDao().insert(ChatMessage(role="user",content=prompt,mode=mode.label))
 val out=StringBuilder()
-HybridEngine(db).generateResponse(prompt,mode,useOnline).collect{token->out.append(token);log.append(token)}
+HybridEngine(db, app.localEngine).generateResponse(prompt,mode,useOnline).collect{token->out.append(token);log.append(token)}
 db.chatDao().insert(ChatMessage(role="assistant",content=out.toString(),mode=mode.label))
 }finally{send.isEnabled=true}
 }
