@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="12dp">
+<com.google.android.material.chip.ChipGroup android:id="@+id/chipMode" android:layout_width="match_parent" android:layout_height="wrap_content" app:singleSelection="true">
+<com.google.android.material.chip.Chip android:id="@+id/modeFast" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rápido"/>
+<com.google.android.material.chip.Chip android:id="@+id/modeBalanced" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Equilibrado" android:checked="true"/>
+<com.google.android.material.chip.Chip android:id="@+id/modeConservative" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Conservador"/>
+<com.google.android.material.chip.Chip android:id="@+id/modeStudy" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Estudo"/>
+<com.google.android.material.chip.Chip android:id="@+id/modeCreative" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Criativo"/>
+</com.google.android.material.chip.ChipGroup>
+<com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchOnline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Usar modo online"/>
+<ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"><TextView android:id="@+id/chatLog" android:layout_width="match_parent" android:layout_height="wrap_content" android:textIsSelectable="true"/></ScrollView>
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+<EditText android:id="@+id/inputMessage" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="Escreve..." android:inputType="textMultiLine"/>
+<Button android:id="@+id/btnSend" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Enviar"/>
+<Button android:id="@+id/btnStop" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Parar"/>
+</LinearLayout></LinearLayout>
